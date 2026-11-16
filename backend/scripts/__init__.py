@@ -1,0 +1,1 @@
+"""backend.scripts — operator-facing one-shot scripts (disclosure audio generator, future tools)."""

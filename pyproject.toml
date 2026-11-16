@@ -1,0 +1,65 @@
+[project]
+name = "car-phone-call-assistance"
+version = "0.1.0"
+description = "AI-powered car dealership consultation backend"
+requires-python = ">=3.11"
+# Production runtime dependencies. Versions are pinned to ranges that match
+# the successfully-tested Ubuntu environment. We allow forward patches inside
+# a minor and never perform an unrelated major-version upgrade.
+#
+# Install:  pip install -e .
+dependencies = [
+    # Web framework + ASGI server
+    "fastapi>=0.115.0,<0.116.0",         # tested with 0.115.14
+    "uvicorn[standard]>=0.30.0,<0.32.0", # tested with 0.31.1
+                                          # [standard] pulls httptools/uvloop/watchfiles/websockets/PyYAML/h11
+    "starlette>=0.46.0,<0.47.0",         # tested with 0.46.2
+
+    # Request / response validation
+    "pydantic[email]>=2.9.0,<2.10.0",    # tested with 2.9.2
+    "pydantic-settings>=2.6.0,<2.7.0",   # tested with 2.6.1
+    "python-dotenv>=1.0.0,<2.0.0",       # tested with 1.2.2
+
+    # Persistence + HTTP + WebSockets
+    "aiosqlite>=0.20.0,<0.21.0",         # tested with 0.20.0
+    "httpx>=0.27.0,<0.28.0",             # tested with 0.27.2
+    "websockets>=13.0,<17.0",            # tested with 16.1.1
+    "bcrypt>=4.2.0,<4.3.0",              # tested with 4.2.1
+
+    # Form parsing — required for ``await request.form()`` in
+    # backend/api/arrange.py (Twilio webhook status callback). FastAPI
+    # raises 500 at runtime on a multipart/form body without it.
+    "python-multipart>=0.0.32,<0.1.0",    # tested with 0.0.32
+
+    # Third-party provider SDKs
+    "twilio>=9.10.0,<10.0.0",            # tested with 9.10.9
+    "sarvamai>=0.1.28,<0.2.0",           # tested with 0.1.28
+]
+
+[project.optional-dependencies]
+# Development and testing tooling. Install with: pip install -e ".[dev]"
+# None of these are imported by production-backend code; they live here
+# so a runtime-only deployment does not pull them in.
+#
+# pyngrok, used only by obsolete standalone scripts, is intentionally NOT
+# declared: the supported Ubuntu tunnel is Cloudflared (already installed
+# at the OS level). Add pyngrok back only if a current script depends on
+# it again.
+dev = [
+    "pytest>=8.3.0,<9.0.0",              # tested with 8.4.2
+    "pytest-asyncio>=0.24.0,<0.25.0",    # tested with 0.24.0
+    "pytest-timeout>=2.4.0,<3.0.0",      # tested with 2.4.0
+    "asgi-lifespan>=2.0.0,<3.0.0",       # tested with 2.1.0
+    "ruff>=0.15.0,<1.0.0",               # tested with 0.15.22
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.hatch.build.targets.wheel]
+packages = ["backend"]
